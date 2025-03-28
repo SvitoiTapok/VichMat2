@@ -67,7 +67,7 @@ def find_max_for_dif2(func, x_min, x_max, y_min, y_max):
         y_min = y_perv
     if abs(func.subs({x: x_min, y: y_min})) > max_value:
         max_value = func.subs({x: x_min, y: y_min})
-    print(func, " : ", max_value)
+    #(func, " : ", max_value)
     return max_value
 
 def dihotomy_method(func, spfunc, left, right, accuracy):
@@ -138,8 +138,8 @@ def Simple_iterations_method(func, spfunc, left, right, accuracy):
         calc_err_label.config(text="Сообщение об ошибке: не удается определить корни методом простой итерации(производные меняют знак)")
         return 0
     lamb = 1 / find_max_for_dif(diff1, left, right)
-    print(lamb)
-    print(diff2, diff2.subs(x, left), diff1.subs(x, left))
+    #print(lamb)
+    #print(diff2, diff2.subs(x, left), diff1.subs(x, left))
     if diff1.subs(x, left) > 0: lamb *= -1
     fi = lambda x: x + lamb * func(x)
     if func(left) * diff2.subs(x, left) > 0:
@@ -176,7 +176,7 @@ def Simple_iteration_sys_method(syst, first_funcsp, second_funcsp, x_min, x_max,
     fi2_dy = sp.diff(second_funcsp, 'y')
     X = []
     Y = []
-    print(fi1_dx, fi1_dy, fi2_dx, fi2_dy, first_funcsp, second_funcsp, sep="|")
+    #print(fi1_dx, fi1_dy, fi2_dx, fi2_dy, first_funcsp, second_funcsp, sep="|")
     if(max(abs(find_max_for_dif2(fi1_dx, x_min, x_max, y_min, y_max))+abs(find_max_for_dif2(fi1_dy, y_min, y_max, x_min, x_max)),
            abs(find_max_for_dif2(fi2_dx, x_min, x_max, y_min, y_max))+abs(find_max_for_dif2(fi2_dy, y_min, y_max, x_min, x_max)))>1):
         calc_err_label1.config(text="Сообщение об ошибке: не удается определить корни методом простой итерации, не сходящийся алгоритм")
@@ -190,11 +190,11 @@ def Simple_iteration_sys_method(syst, first_funcsp, second_funcsp, x_min, x_max,
         Y.append(y0)
         i+=1
         try:
-            print(x0, y0)
+            #print(x0, y0)
             x1 = syst(x0, y0)[0]+x0
             y1 = syst(x0, y0)[1]+y0
         except Exception as e:
-            print(e)
+            #print(e)
 
             calc_err_label1.config(text="Сообщение об ошибке: не получилось получить решение системы")
             return 0
@@ -283,6 +283,7 @@ def draw_func():
     return 0
 
 def calculate_root():
+    delete_pre_res_func()
     if draw_func():
         return 1
 
@@ -313,7 +314,7 @@ def calculate_root():
         Info_label.config(text=f"Информация о выполнении({name})")
     else:
         return 1
-    print(answ)
+    #print(answ)
 
 
 def draw_sys():
@@ -346,6 +347,7 @@ def draw_sys():
     return 0
 
 def calculate_root_sys():
+    delete_pre_res_sys()
     if draw_sys():
         return 1
     sys = cur_sys
@@ -367,10 +369,11 @@ def calculate_root_sys():
         func_label1.config(text=f"Значение в точке: f1(x,y)={round(answ[1][0], 10)}, f2(x,y)={round(answ[1][1], 10)}")
     else:
         return 1
-    print(answ)
+    #print(answ)
 
 
 def on_func_combobox_change(event):
+    delete_pre_res_func()
     # Функция, которая вызывается при изменении значения в выпадающем списке
     global cur_func
     global cur_func_name
@@ -395,6 +398,7 @@ def on_func_combobox_change(event):
     func_combobox_label.config(text=f"Вы выбрали: {selected_value}")  # Обновляем текст метки
 
 def on_meth_combobox_change(event):
+    delete_pre_res_func()
     global cur_meth
     global cur_meth_name
     selected_value = method_combobox.get()
@@ -429,13 +433,19 @@ def on_sys_combobox_change(event):
     cur_sys_name = selected_value
     sys_combobox_label.config(text=f"Вы выбрали: {selected_value}")
 
-# def update_plot():
-#     ax.clear()
-#     x = np.linspace(0, 2 * np.pi, 100)
-#     y = np.sin(x * float(frequency.get())) * float(amplitude.get())
-#     ax.plot(x, y)
-#     ax.set_title("График синуса")
-#     canvas.draw()
+    delete_pre_res_sys()
+
+def delete_pre_res_func():
+    root_label.config(text=f"Рассчитанный конень:")
+    iter_label.config(text=f"Количество итераций:")
+    func_label.config(text=f"Значение в точке:")
+    Info_label.config(text=f"Информация о выполнении")
+
+def delete_pre_res_sys():
+    root_label1.config(text=f"Рассчитанный конень:")
+    iter_label1.config(text=f"Количество итераций:")
+    func_label1.config(text=f"Значение в точке:")
+
 
 def show_frame(frame):
     # Скрыть все фреймы
