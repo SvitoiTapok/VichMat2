@@ -1,56 +1,40 @@
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from tkinter import ttk
+import numpy as np
 
-def show_fields(event):
-    # Функция для отображения нужного набора полей
-    selected_option = combobox.get()  # Получаем выбранное значение
+# Функция для обновления графика
+def update_plot():
+    ax.clear()  # Очищаем предыдущий график
+    x = np.linspace(0, 10, 100)
+    y = np.sin(np.exp(x) + float(scale.get())) # Динамически изменяем график
+    ax.plot(x, y, label=f"sin(exp(x) + {scale.get()}")
+    ax.grid(True, color='gray', linestyle='--', linewidth=0.5, alpha=0.7)
+    ax.set_title("Динамический график")
+    ax.set_xlabel("Ось X")
+    ax.set_ylabel("Ось Y")
+    ax.legend()
+    canvas.draw_idle()  # Обновляем график
 
-    # Скрываем все поля
-    for widget in field_set_1 + field_set_2:
-        widget.pack_forget()
-
-    # Отображаем нужный набор полей
-    if selected_option == "Набор 1":
-        for widget in field_set_1:
-            widget.pack(pady=5)
-    elif selected_option == "Набор 2":
-        for widget in field_set_2:
-            widget.pack(pady=5)
-
-# Создаем главное окно
+# Создаем главное окно Tkinter
 root = tk.Tk()
-root.title("Переключение между наборами полей")
+root.title("Динамический график с сеткой")
 
-# Создаем выпадающий список для переключения между наборами полей
-options = ["Набор 1", "Набор 2"]
-combobox = ttk.Combobox(root, values=options)
-combobox.set("Выберите набор полей")  # Устанавливаем текст по умолчанию
-combobox.pack(pady=10)
+# Создаем фигуру и оси
+fig, ax = plt.subplots()
 
-# Привязываем обработчик события к изменению значения в combobox
-combobox.bind("<<ComboboxSelected>>", show_fields)
+# Создаем холст для встраивания графика в Tkinter
+canvas = FigureCanvasTkAgg(fig, master=root)
+canvas.get_tk_widget().pack()
 
-# Создаем первый набор полей
-field_set_1 = [
-    tk.Label(root, text="Поле 1.1"),
-    tk.Entry(root),
-    tk.Label(root, text="Поле 1.2"),
-    tk.Entry(root),
-]
+# Добавляем слайдер для изменения параметра
+scale = ttk.Scale(root, from_=-5, to=5, orient="horizontal", command=lambda _: update_plot())
+scale.set(0)  # Начальное значение
+scale.pack()
 
-# Создаем второй набор полей
-field_set_2 = [
-    tk.Label(root, text="Поле 2.1"),
-    tk.Entry(root),
-    tk.Label(root, text="Поле 2.2"),
-    tk.Entry(root),
-    tk.Label(root, text="Поле 2.3"),
-    tk.Entry(root),
-]
+# Первоначальная отрисовка графика
+update_plot()
 
-# По умолчанию отображаем первый набор полей
-for widget in field_set_1:
-    widget.pack(pady=5)
-
-# Запускаем главный цикл обработки событий
+# Запуск главного цикла Tkinter
 root.mainloop()
